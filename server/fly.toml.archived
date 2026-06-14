@@ -1,0 +1,46 @@
+# Metalins server — Fly.io config
+# Region: iad (us-east) por default — cheapest. Cambiar a fra (Frankfurt) cuando
+# tengamos clientes Enterprise que requieran EU residency (Fase 5+).
+#
+# Secrets requeridos (set via `fly secrets set`):
+#   METALINS_PRIVATE_KEY_PEM  — contents of private_key.pem
+#   METALINS_PUBLIC_KEY_PEM   — contents of public_key.pem
+#   METALINS_DB_URL           — postgres URL (Supabase EU/Neon free, etc.) si querés persistencia
+#   METALINS_API_BASE_URL     — https://metalins-server.fly.dev
+#   METALINS_PUBLIC_BASE_URL  — https://metalins-server.fly.dev
+#
+# Comando de deploy:
+#   fly secrets set METALINS_PRIVATE_KEY_PEM="$(cat keys/private_key.pem)"
+#   fly secrets set METALINS_PUBLIC_KEY_PEM="$(cat keys/public_key.pem)"
+#   fly deploy
+
+app = "metalins-server"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  METALINS_ENV = "production"
+  METALINS_HOST = "0.0.0.0"
+  METALINS_PORT = "8000"
+  METALINS_KEY_ID = "metalins-key-2026-1"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0  # scale to zero in dev/early stages
+  processes = ["app"]
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/health"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

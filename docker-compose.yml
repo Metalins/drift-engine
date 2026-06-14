@@ -1,0 +1,91 @@
+# Metalins self-hosting stack (gh-89).
+#
+# Brings up the Metalins API server (FastAPI) + Postgres with one command:
+#
+#   cp .env.example .env      # optional — sensible defaults work out of the box
+#   docker compose up         # (or: docker-compose up)
+#
+# Then: curl http://localhost:8000/health  ->  {"status":"ok",...}
+#
+# The dashboard (Next.js) is included (gh-119): once the stack is up, open
+# http://localhost:3000 and sign in with the admin account printed in the
+# server logs on first boot. The dashboard talks to the server over the
+# docker network at http://server:8000.
+name: metalins
+
+services:
+  db:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-metalins}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-metalins}
+      POSTGRES_DB: ${POSTGRES_DB:-metalins}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # Uncomment to inspect the DB from the host (e.g. psql):
+    # ports:
+    #   - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-metalins} -d ${POSTGRES_DB:-metalins}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  server:
+    build:
+      context: ./server
+    restart: unless-stopped
+    # Override the image's Cloud Run CMD: on first boot generate the signing
+    # keypair (into the `keys` volume) and create the schema + a dev API key.
+    command: ["sh", "scripts/docker-entrypoint.sh"]
+    environment:
+      METALINS_ENV: ${METALINS_ENV:-development}
+      METALINS_DB_URL: ${METALINS_DB_URL:-postgresql+psycopg://metalins:metalins@db:5432/metalins}
+      PORT: "8000"
+      METALINS_PORT: "8000"
+      METALINS_PRIVATE_KEY_PATH: ./keys/private_key.pem
+      METALINS_PUBLIC_KEY_PATH: ./keys/public_key.pem
+      METALINS_KEY_ID: ${METALINS_KEY_ID:-metalins-key-2026-1}
+      METALINS_PROOF_TTL_SECONDS: ${METALINS_PROOF_TTL_SECONDS:-3600}
+      METALINS_API_BASE_URL: ${METALINS_API_BASE_URL:-http://localhost:8000}
+      METALINS_PUBLIC_BASE_URL: ${METALINS_PUBLIC_BASE_URL:-http://localhost:8000}
+      METALINS_LOG_LEVEL: ${METALINS_LOG_LEVEL:-INFO}
+    ports:
+      - "${METALINS_HOST_PORT:-8000}:8000"
+    volumes:
+      # Persist the generated signing keypair so issued κ-Proofs stay
+      # verifiable across container restarts.
+      - keys:/app/keys
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          python -c "import urllib.request,sys;
+          sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health').status==200 else 1)"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  dashboard:
+    build:
+      context: ./dashboard
+    restart: unless-stopped
+    environment:
+      # Base URL of the API server as seen from inside the docker network.
+      DRIFT_ENGINE_API_URL: ${DRIFT_ENGINE_API_URL:-http://server:8000}
+      NODE_ENV: production
+      PORT: "3000"
+    ports:
+      - "${DASHBOARD_PORT:-3000}:3000"
+    depends_on:
+      server:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  keys:
