@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.env
+*.env
+server/keys/
+*.sqlite
+*.db
+.DS_Store

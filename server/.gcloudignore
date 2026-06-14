@@ -1,0 +1,34 @@
+# What NOT to upload to Cloud Build when running `gcloud run deploy --source .`
+# Mirrors .gitignore but is gcloud-specific.
+
+# Local development artifacts
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Local DB and keys — keys go via Secret Manager, NEVER baked into the image
+keys/
+*.pem
+*.db
+*.db-journal
+metalins-dev.sqlite*
+.env
+.env.*
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+
+# CI / git
+.git/
+.gitignore
+.gcloudignore
+
+# Tests (no need in production image; keep them in CI only)
+tests/
+
+# Old deploy configs
+fly.toml*
