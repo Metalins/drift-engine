@@ -20,56 +20,85 @@ Read the paper: [κ-Identity: Behavioral Fingerprinting for Continuous Verificat
 ### Requirements
 
 - Docker and Docker Compose
-- Python 3.10+
 
-### 1. Clone and configure
+That's it. Everything else is handled on first boot.
+
+### Start
 
 ```bash
 git clone https://github.com/Metalins/drift-engine
 cd drift-engine
-cp .env.example .env
-# Edit .env with your settings
+docker compose up
 ```
 
-### 2. Generate signing keys
+On first boot the server will:
+1. Generate an RSA signing keypair (persisted in a Docker volume — never leaves your machine)
+2. Initialize the database schema
+3. Create an admin account (`admin@localhost` / `changeme`) — **change this on first login**
+4. Print a dev API key in the logs — save it, it's shown only once
 
-Drift Engine issues κ-Proofs signed with an RSA key pair. You must generate your own — do not share the private key.
+```
+✓ Dev API key created. SAVE THIS — it is only shown once:
+
+   ml_dev_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+Use it as: Authorization: Bearer <api_key>
+```
+
+The API is now available at `http://localhost:8000`.
 
 ```bash
-mkdir -p server/keys
-openssl genrsa -out server/keys/private_key.pem 2048
-openssl rsa -in server/keys/private_key.pem -pubout -out server/keys/public_key.pem
-```
-
-Update `.env` to point to these paths:
-```env
-PRIVATE_KEY_PATH=./keys/private_key.pem
-PUBLIC_KEY_PATH=./keys/public_key.pem
-```
-
-### 3. Start the server
-
-```bash
-docker compose up --build
-```
-
-The API is now available at `http://localhost:8000`. Check the health endpoint:
-
-```bash
+# Verify it's running
 curl http://localhost:8000/health
+# → {"status":"ok","service":"metalins-server"}
+
+# Login
+curl -X POST http://localhost:8000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@localhost","password":"changeme"}'
+
+# List agents (use the API key from the logs)
+curl http://localhost:8000/internal/v1/agents \
+  -H "Authorization: Bearer ml_dev_XXXX..."
 ```
 
-API docs: `http://localhost:8000/docs`
+**Interactive API docs:** `http://localhost:8000/docs`
+
+### Configuration (optional)
+
+Copy `.env.example` to `.env` to customize ports, log level, and other settings. The defaults work out of the box.
+
+### Stopping
+
+```bash
+docker compose down        # stop, keep data
+docker compose down -v     # stop and wipe all data
+```
 
 ## SDK
 
-Use the Python SDK to instrument your agents:
+Instrument your agents with the Python SDK:
 
 ```bash
 pip install metalins-drift
 ```
 
-→ [drift-engine-python](https://github.com/Metalins/drift-engine-python)
+```python
+from metalins_drift import MetalinsClient
+
+client = MetalinsClient(
+    api_key="ml_dev_XXXX...",
+    server_url="http://localhost:8000",  # your self-hosted instance
+)
+
+# Register an agent
+agent = client.register_agent(name="my-agent")
+
+# Log turns
+client.log_turn(agent_id=agent["id"], input="...", output="...")
+```
+
+→ [drift-engine-python](https://github.com/Metalins/drift-engine-python) for full SDK docs.
 
 ## Architecture
 
@@ -88,7 +117,7 @@ This implementation is the reference system for the κ-Identity framework descri
 
 ## Organization
 
-Metalins is an independent research lab building novel tools through open research.
+Metalins is an independent research lab.
 
 → [metalins.com](https://metalins.com)  
 → [github.com/Metalins](https://github.com/Metalins)
