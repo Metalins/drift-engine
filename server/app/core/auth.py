@@ -1,9 +1,18 @@
-"""API auth dependencies — dual auth (API key | Supabase JWT) per D-PROD.17.
+"""API auth dependencies — dual auth (API key | session JWT) per D-PROD.17.
 
 Two callers reach the API:
   - SDK + scripts → present a Bearer `ml_live_*` API key.
-  - Dashboard      → presents a Bearer Supabase JWT (HS256, signed with
-                     SUPABASE_JWT_SECRET).
+  - Dashboard      → presents a Bearer session JWT.
+
+gh-117 (self-hosted pivot, 2026-06-19): the dashboard JWT is now a LOCAL
+HS256 token minted by `POST /auth/login` (see `app.core.local_auth`), not a
+Supabase token. A local token carries `iss="metalins-local"` and is verified
+with the server's own secret — no JWKS fetch, no external IdP.
+
+The legacy Supabase validation path is kept ONLY as a fallback for a deploy
+that still has Supabase env vars configured (so José's live instance keeps
+working across the dashboard cutover). A self-hosted install leaves those
+unset and never touches it.
 
 Both paths produce an `AuthContext` carrying the customer_id (the unit of
 ownership for agents, observables, probes) and, when API-key auth was used,
@@ -110,6 +119,10 @@ class AuthContext:
     customer_id: str
     customer_email: str
     api_key: APIKey | None = None
+    # gh-118 — surfaced so the dashboard can force a password change on the
+    # first login of a bootstrap admin still using the default password.
+    # Always False for API-key callers.
+    must_change_password: bool = False
 
 
 # Module-level JWKS cache (Supabase rotates rarely; 1h TTL is fine).
@@ -156,6 +169,43 @@ def _fetch_jwks() -> dict:
     _JWKS_CACHE["keys"] = jwks
     _JWKS_CACHE["fetched_at"] = now
     return jwks
+
+
+def _validate_local_jwt(token: str, db: Session) -> AuthContext:
+    """Decode a LOCAL session JWT (gh-117) and resolve its customer.
+
+    The token is minted by `POST /auth/login` and signed with the server's
+    own secret. Unlike the Supabase path there is no auto-provisioning: the
+    `sub` must correspond to an existing customer row (the admin created at
+    first run, or any password-backed account), otherwise we fail closed.
+    """
+    from jose import JWTError
+
+    from app.core import local_auth
+
+    try:
+        payload = local_auth.decode_access_token(token)
+    except JWTError as e:
+        raise HTTPException(status_code=401, detail=f"Invalid session token: {e}")
+
+    sub = payload.get("sub")
+    if not sub:
+        raise HTTPException(status_code=401, detail="Session token missing sub claim")
+
+    customer = db.query(Customer).filter(Customer.id == sub).first()
+    if not customer:
+        raise HTTPException(
+            status_code=401,
+            detail="Session token references an unknown account — sign in again.",
+        )
+
+    return AuthContext(
+        auth_type="jwt",
+        customer_id=customer.id,
+        customer_email=customer.email,
+        api_key=None,
+        must_change_password=bool(getattr(customer, "must_change_password", False)),
+    )
 
 
 def _validate_jwt(token: str, db: Session) -> AuthContext:
@@ -352,7 +402,8 @@ def require_auth(
     Order of resolution:
       1. Bypass header (only if env var set + header present + valid signature)
       2. Bearer token starting with `ml_` → API key
-      3. Bearer token otherwise → Supabase JWT
+      3. Bearer token otherwise → session JWT (local first; legacy Supabase
+         only as a fallback when this deploy still has Supabase configured)
     """
     # Bypass path takes precedence when configured + header present so a
     # persona runner can authenticate without minting real JWTs.
@@ -368,4 +419,37 @@ def require_auth(
 
     if token.startswith("ml_"):
         return _validate_api_key(token, db)
-    return _validate_jwt(token, db)
+    return _validate_session_jwt(token, db)
+
+
+def _validate_session_jwt(token: str, db: Session) -> AuthContext:
+    """Route a Bearer JWT to local or legacy-Supabase validation.
+
+    Local tokens (gh-117) carry `iss="metalins-local"` and are the only
+    path a self-hosted install ever takes. We peek the unverified issuer to
+    decide; tokens with a different/absent issuer fall through to the legacy
+    Supabase validator *only* when this deploy still has Supabase configured
+    (transition support for José's live instance). Otherwise everything is
+    validated locally.
+    """
+    from jose import JWTError, jwt as _jwt
+
+    from app.core.local_auth import LOCAL_ISSUER
+
+    try:
+        issuer = _jwt.get_unverified_claims(token).get("iss")
+    except JWTError:
+        issuer = None
+
+    if issuer == LOCAL_ISSUER:
+        return _validate_local_jwt(token, db)
+
+    supabase_configured = bool(
+        settings.supabase_jwt_secret or settings.supabase_url
+    )
+    if supabase_configured:
+        return _validate_jwt(token, db)
+
+    # No Supabase on this deploy → it must be a (possibly malformed) local
+    # token. Validate locally so the error is the right one.
+    return _validate_local_jwt(token, db)

@@ -1,4 +1,5 @@
 """Metalins server entrypoint."""
+import logging
 import os
 from contextlib import asynccontextmanager
 
@@ -6,14 +7,36 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import __version__
-from app.api import agents, verify, public, admin, mcp_endpoints, me, api_keys, watchers, anchors, badge, webhooks, developer, abuse, compliance, auth_registration
+from app.api import agents, verify, public, admin, mcp_endpoints, me, api_keys, watchers, anchors, badge, webhooks, developer, abuse, compliance, auth_registration, auth_local
 from app.config import settings
 from app.db import engine, Base
 from app.services.observable_job import start_scheduler, stop_scheduler
 from app.services.watcher_job import start_watcher_scheduler
 
+log = logging.getLogger(__name__)
+
 # Auto-create tables in dev (in prod use Alembic migrations)
 Base.metadata.create_all(bind=engine)
+
+
+def _bootstrap_admin_on_startup() -> None:
+    """gh-118 — create the first-run admin if none exists. Best-effort:
+    a deploy whose schema predates the gh-117 columns (migration not yet
+    applied) shouldn't crash boot — it logs and the legacy auth path keeps
+    working until the migration lands."""
+    from app.db.session import SessionLocal
+    from app.services.first_run import bootstrap_admin
+
+    db = SessionLocal()
+    try:
+        bootstrap_admin(db)
+    except Exception:  # noqa: BLE001 — never block startup on bootstrap
+        log.exception("Admin bootstrap skipped (schema migration pending?)")
+    finally:
+        db.close()
+
+
+_bootstrap_admin_on_startup()
 
 
 @asynccontextmanager
@@ -64,6 +87,9 @@ app.include_router(abuse.router)
 # Registration gate (gh-95) — public, no-auth: the closed public-signup
 # endpoint + the registration-policy probe the dashboard reads.
 app.include_router(auth_registration.router)
+# Local auth (gh-117) — public plane: POST /auth/login + /auth/change-password.
+# Self-hosted login; replaces Supabase magic-link.
+app.include_router(auth_local.router)
 
 # Developer API plane (UX-5.17.API1) — the public, API-key-authed surface
 # customers and the SDK call. Lives at /v1/; see PUBLIC-API-DESIGN.md.

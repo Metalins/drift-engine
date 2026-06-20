@@ -43,6 +43,9 @@ def get_me(auth: AuthContext = Depends(require_auth)) -> dict:
         "auth_type": auth.auth_type,
         "api_key_id": auth.api_key.id if auth.api_key else None,
         "api_key_name": auth.api_key.name if auth.api_key else None,
+        # gh-118 — lets the dashboard show the "change your default password"
+        # banner without a second round-trip. Always False for API keys.
+        "must_change_password": auth.must_change_password,
     }
 
 

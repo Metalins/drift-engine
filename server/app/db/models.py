@@ -23,6 +23,21 @@ class Customer(Base):
     metadata_json = Column(JSON, default=dict)
     created_at = Column(DateTime, default=datetime.utcnow)
 
+    # gh-117/gh-118 (self-hosted local auth, 2026-06-19). Drift Engine no
+    # longer leans on Supabase for login. The admin account lives here with a
+    # bcrypt `password_hash`; `is_admin` marks the bootstrap account; and
+    # `must_change_password` is set when the account is created with the
+    # default password so the dashboard can force a change on first login.
+    # All three are nullable / defaulted so existing customer rows (created
+    # under the old Supabase flow) remain valid without a backfill.
+    password_hash = Column(String, nullable=True)
+    is_admin = Column(
+        Boolean, nullable=False, default=False, server_default="0"
+    )
+    must_change_password = Column(
+        Boolean, nullable=False, default=False, server_default="0"
+    )
+
 
 class APIKey(Base):
     """Customer API key for SDK auth.

@@ -29,6 +29,29 @@ class Settings(BaseSettings):
     # Secret Manager secret. Si está vacío, los endpoints admin están deshabilitados.
     master_token: str | None = None
 
+    # gh-117 (self-hosted pivot, 2026-06-19) — local auth. Drift Engine is now
+    # self-hosted: it carries its own username/password + JWT auth instead of
+    # depending on Supabase. The dashboard exchanges admin credentials at
+    # POST /auth/login for a short-lived HS256 JWT signed with this secret;
+    # `require_auth` validates it locally — no external identity provider.
+    #
+    # When unset, the secret is derived deterministically from the RS256
+    # signing private key (which is itself persisted in the `keys` volume),
+    # so a turnkey `docker-compose up` works WITHOUT the operator setting yet
+    # another secret, and issued tokens survive restarts. Set it explicitly
+    # to rotate every session token at once or to share auth across replicas
+    # that don't share the signing key.
+    auth_jwt_secret: str | None = None
+    auth_jwt_ttl_seconds: int = 86400  # 24h sessions
+
+    # gh-118 — first-run admin bootstrap. On startup, if the users table has
+    # no admin yet, one is created from these. The defaults make a fresh
+    # install immediately usable; logging in with the default password flags
+    # the account for a forced password change (must_change_password), which
+    # the dashboard surfaces as a banner on first login.
+    admin_email: str = "admin@localhost"
+    admin_password: str = "changeme"
+
     # gh-95 (research-lab pivot, 2026-06-14) — public registration switch.
     # api.metalins.ai is now José's private instance: no external users sign up.
     # When False (the default), the public registration endpoint returns 403 and
