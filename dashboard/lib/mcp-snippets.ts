@@ -11,7 +11,7 @@
 
 export const MCP_BASE = "https://api.metalins.ai/v1/mcp";
 export const MCP_URL = `${MCP_BASE}/jsonrpc`;
-export const PLACEHOLDER = "YOUR_METALINS_KEY";
+export const PLACEHOLDER = "YOUR_API_KEY";
 
 /**
  * Turn an agent name into a safe MCP server name for the client config.

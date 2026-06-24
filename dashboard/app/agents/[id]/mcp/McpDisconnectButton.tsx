@@ -100,7 +100,7 @@ export function McpDisconnectButton({
               MCP surface is paused
             </h3>
             <p className="text-sm text-muted-foreground">
-              Metalins is rejecting new events for this agent (your
+              Drift Engine is rejecting new events for this agent (your
               client gets a 403). Your client config still has the
               entry — Resume below to start accepting again. Existing
               event history is preserved either way.

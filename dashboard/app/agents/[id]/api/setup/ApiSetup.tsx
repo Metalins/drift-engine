@@ -166,20 +166,6 @@ export function ApiSetup({
             />
           </div>
         </details>
-
-        <div className="mt-5 rounded-md border bg-muted/30 p-4 text-xs text-muted-foreground">
-          Using LangChain? Install{" "}
-          <code className="rounded bg-muted px-1 py-0.5">
-            metalins[langchain]
-          </code>{" "}
-          and attach{" "}
-          <code className="rounded bg-muted px-1 py-0.5">
-            MetalinsCallbackHandler(agent)
-          </code>{" "}
-          to your chain — every run is logged automatically, no explicit{" "}
-          <code className="rounded bg-muted px-1 py-0.5">agent.log()</code>{" "}
-          call needed.
-        </div>
       </section>
 
       {/* ---- Footer: docs + done -------------------------------------- */}

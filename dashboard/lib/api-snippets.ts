@@ -21,7 +21,7 @@
 export const API_BASE = "https://api.metalins.ai/v1";
 
 /** Shown when the real value isn't available (docs, or before a key is minted). */
-export const KEY_PLACEHOLDER = "YOUR_METALINS_KEY";
+export const KEY_PLACEHOLDER = "YOUR_API_KEY";
 export const AGENT_SECRET_PLACEHOLDER = "YOUR_AGENT_SECRET";
 
 /** Install line — its own block because it's shell, not Python. */

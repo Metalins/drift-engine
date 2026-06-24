@@ -325,7 +325,7 @@ function FleetHero({ state }: { state: FleetState }) {
                 {state.troubled.name}
               </span>{" "}
               {connIssue
-                ? "— Metalins can't connect to this agent's bot. Check the bot setup so verification can start."
+                ? "— Drift Engine can't connect to this agent's bot. Check the bot setup so verification can start."
                 : "— something shifted in this agent's trust signals. Open it to see what changed."}
             </p>
             <div className="mt-4 flex flex-wrap gap-2">

@@ -1,6 +1,6 @@
 /**
  * ConfigBlock — labeled code block with a Copy button + optional
- * "replace YOUR_METALINS_KEY" hint. Shared between the dense `/mcp`
+ * "replace YOUR_API_KEY" hint. Shared between the dense `/mcp`
  * page and the step-by-step `/mcp/setup` wizard so the snippet layout
  * stays consistent (Sprint UX-5.15.T).
  */
@@ -14,7 +14,7 @@ interface Props {
   description: string;
   code: string;
   copyLabel: string;
-  /** When false, render the "replace YOUR_METALINS_KEY" hint below. */
+  /** When false, render the "replace YOUR_API_KEY" hint below. */
   hasRealKey: boolean;
 }
 

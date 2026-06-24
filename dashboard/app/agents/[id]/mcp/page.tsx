@@ -66,7 +66,7 @@ export default async function AgentMcpPage({ params, searchParams }: PageProps) 
     <main className="space-y-8">
       {isWizard && (
         <div className="pt-2">
-          <WizardProgress currentStep={3} />
+          <WizardProgress currentStep={2} />
         </div>
       )}
       <div>
@@ -88,7 +88,7 @@ export default async function AgentMcpPage({ params, searchParams }: PageProps) 
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
           Setting up identity tracking is <strong>two parts</strong>:
-          (1) add Metalins as an MCP server in your client (Claude
+          (1) add Drift Engine as an MCP server in your client (Claude
           Code, Cursor or Claude Desktop), and (2) paste a short block
           into your agent&apos;s system prompt so the LLM actually
           calls{" "}
@@ -163,7 +163,7 @@ export default async function AgentMcpPage({ params, searchParams }: PageProps) 
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           MCP (Model Context Protocol) is how AI clients like Claude
           Code, Cursor and Claude Desktop call external tools. Adding
-          Metalins as an MCP server gives the LLM <em>the ability</em>
+          Drift Engine as an MCP server gives the LLM <em>the ability</em>
           {" "}to log events to your agent &mdash; but most clients
           only call tools when the LLM decides to. The system-prompt
           block below tells your LLM to actually use it after every

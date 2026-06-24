@@ -69,7 +69,7 @@ export default async function ApiSetupPage({
     <main className="space-y-6">
       {isWizard && (
         <div className="pt-2">
-          <WizardProgress currentStep={3} />
+          <WizardProgress currentStep={2} />
         </div>
       )}
 

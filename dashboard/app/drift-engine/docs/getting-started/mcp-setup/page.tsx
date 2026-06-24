@@ -108,7 +108,7 @@ export default function McpSetupPage() {
         <p className="text-sm text-muted-foreground">
           Replace{" "}
           <code className="rounded bg-muted px-1 py-0.5 text-xs">
-            YOUR_METALINS_KEY
+            YOUR_API_KEY
           </code>{" "}
           with the plaintext key, and{" "}
           <code className="rounded bg-muted px-1 py-0.5 text-xs">
@@ -126,7 +126,7 @@ export default function McpSetupPage() {
             title="Claude Code (CLI)"
             description="One-time command — URL is positional; --scope user installs it for every project on the machine."
             code={`claude mcp add --transport http metalins-AGENT ${MCP_BASE}/jsonrpc \\
-  -H "Authorization: Bearer YOUR_METALINS_KEY" \\
+  -H "Authorization: Bearer YOUR_API_KEY" \\
   --scope user`}
           />
           <ConfigBlock
@@ -137,7 +137,7 @@ export default function McpSetupPage() {
     "metalins-AGENT": {
       "url": "${MCP_BASE}/jsonrpc",
       "headers": {
-        "Authorization": "Bearer YOUR_METALINS_KEY"
+        "Authorization": "Bearer YOUR_API_KEY"
       }
     }
   }
@@ -174,7 +174,7 @@ export default function McpSetupPage() {
                 Under <strong>Advanced &rarr; Custom headers</strong>, add{" "}
                 <code className="rounded bg-muted px-1 py-0.5 text-xs">Authorization</code> with value{" "}
                 <code className="break-all rounded bg-muted px-1 py-0.5 text-xs">
-                  Bearer YOUR_METALINS_KEY
+                  Bearer YOUR_API_KEY
                 </code>
                 . Save.
               </li>

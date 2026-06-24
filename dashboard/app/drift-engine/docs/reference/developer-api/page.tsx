@@ -124,7 +124,7 @@ export default function DeveloperApiReferencePage() {
           Base URL <code className="rounded bg-muted px-1 py-0.5 text-xs">{BASE}</code>.
           Authenticate every request with an API key as a bearer token:
         </p>
-        <Code>{`Authorization: Bearer YOUR_METALINS_KEY`}</Code>
+        <Code>{`Authorization: Bearer YOUR_API_KEY`}</Code>
         <p className="text-sm text-muted-foreground">
           Mint a key from the dashboard. The{" "}
           <a
@@ -195,7 +195,7 @@ export default function DeveloperApiReferencePage() {
             the dashboard.
           </p>
           <Code>{`curl -X POST ${BASE}/agents \\
-  -H "Authorization: Bearer YOUR_METALINS_KEY" \\
+  -H "Authorization: Bearer YOUR_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{ "name": "billing-assistant", "metadata": { "agent_profile": "deterministic" } }'`}</Code>
           <ResponseExample

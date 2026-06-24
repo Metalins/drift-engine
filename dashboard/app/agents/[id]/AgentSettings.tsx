@@ -482,7 +482,7 @@ export function AgentSettings({
                     Before deleting: turn off the bot poller
                   </div>
                   <p className="mt-1 text-muted-foreground">
-                    Metalins polls your Telegram bot every few seconds.
+                    Drift Engine polls your Telegram bot every few seconds.
                     The poller stops automatically when the agent is
                     deleted &mdash; you don&apos;t need to do anything
                     on Telegram. The bot itself stays untouched.

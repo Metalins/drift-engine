@@ -36,7 +36,7 @@ const CAUSES = [
   "The bot token was regenerated or revoked in @BotFather — the old token stops working the moment a new one is issued.",
   "The bot was deleted, or blocked from the chats it was watching.",
   "Telegram's API was briefly unreachable — these usually clear on their own.",
-  "A network hiccup between Metalins and Telegram.",
+  "A network hiccup between Drift Engine and Telegram.",
 ];
 
 export function WatcherAlert({ agentId, agentName }: WatcherAlertProps) {
@@ -47,7 +47,7 @@ export function WatcherAlert({ agentId, agentName }: WatcherAlertProps) {
       ariaLabel="Bot connection problem"
       title={
         <>
-          Metalins can&apos;t reach{" "}
+          Drift Engine can&apos;t reach{" "}
           <span className="font-bold">{agentName}</span>&apos;s bot
         </>
       }
@@ -66,7 +66,7 @@ export function WatcherAlert({ agentId, agentName }: WatcherAlertProps) {
       </ul>
 
       <p className="pt-1 text-sm text-foreground/90">
-        Metalins keeps retrying automatically in the background. Open the
+        Drift Engine keeps retrying automatically in the background. Open the
         bot connection to see the exact error, retry right now, or
         reconnect with a fresh token.
       </p>

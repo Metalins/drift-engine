@@ -93,8 +93,8 @@ export default async function AgentAnchorsPage({ params }: PageProps) {
         <p className="mt-3 text-sm text-muted-foreground">
           <strong className="text-foreground">Why it matters:</strong>{" "}
           without an anchor, a visitor seeing your verify page only
-          learns that the agent is registered in Metalins — they have
-          to trust us. With an anchor, they don&apos;t need to trust us
+          learns that the agent is registered in this instance — they have
+          to trust it. With an anchor, they don&apos;t need to trust it
           at all: they open Telegram (or GitHub, or check DNS), see the
           same handle you claim, and decide based on the platforms they
           already know.
@@ -102,7 +102,7 @@ export default async function AgentAnchorsPage({ params }: PageProps) {
         <p className="mt-3 text-sm text-muted-foreground">
           That&apos;s the point: the more places independently confirm
           who runs this agent, the less you depend on any single source
-          (Metalins included).
+          (this instance included).
         </p>
       </section>
 

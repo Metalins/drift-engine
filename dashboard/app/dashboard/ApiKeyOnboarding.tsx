@@ -68,7 +68,7 @@ function CopyButton({ value, label }: { value: string; label: string }) {
 
 /** The revealed-secret panel, shared by both states after a key is minted. */
 function CreatedKeyPanel({ created }: { created: CustomerKeyCreated }) {
-  const snippet = `from metalins_drift import MetalinsClient\n\nclient = MetalinsClient(api_key="${created.secret}")`;
+  const snippet = `import metalins_drift\n\nagent = metalins_drift.Agent(api_key="${created.secret}", name="my-agent")`;
   return (
     <div className="mt-4 space-y-3">
       <div className="rounded-md border border-amber-500/40 bg-amber-500/10 p-3">

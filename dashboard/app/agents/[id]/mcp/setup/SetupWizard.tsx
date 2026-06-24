@@ -709,7 +709,7 @@ function PromptStep({
               </p>
               <pre className="overflow-x-auto rounded bg-background p-2 text-[11px] leading-relaxed">
                 <code>{`---
-description: Metalins identity instrumentation
+description: Drift Engine identity instrumentation
 alwaysApply: true
 ---
 

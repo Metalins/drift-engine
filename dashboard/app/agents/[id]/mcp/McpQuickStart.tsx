@@ -2,10 +2,10 @@
  * McpQuickStart — Step 2 + Step 3 of /agents/[id]/mcp as ONE client
  * component, so the plaintext key minted in step 2 can flow into the
  * step-3 snippets without the user having to substitute
- * `YOUR_METALINS_KEY` by hand.
+ * `YOUR_API_KEY` by hand.
  *
  * Sprint UX-5.15.K (task #852). Jose feedback 2026-05-19: the previous
- * version of this page showed `YOUR_METALINS_KEY` placeholders even
+ * version of this page showed `YOUR_API_KEY` placeholders even
  * after the user just minted a real key — every single MCP onboarding
  * paid a copy-paste-edit tax. Now step 3 snippets render with the
  * actual key the moment step 2 produces one, and there's a single

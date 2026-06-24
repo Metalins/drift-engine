@@ -1,41 +1,39 @@
 /**
- * WizardProgress — 4-step bar shown across the onboarding journey.
+ * WizardProgress — 3-step bar shown across the onboarding journey.
  *
- * Sprint UX-5.10-9 (#668). The "Step 1 of 4" pill from /agents/new
+ * Sprint UX-5.10-9 (#668). The "Step 1 of N" pill from /agents/new
  * was disappearing once the user clicked Create — they'd land on
  * the agent detail with no sense of "where am I in the flow". This
  * component is rendered at the top of each wizard step page when
- * the URL carries `?new=1`, so the journey from name → connect →
+ * the URL carries `?new=1`, so the journey from name → setup →
  * verify stays visible end-to-end.
  *
  * Steps:
- *   1. Basics      — /agents/new (three sub-steps: purpose → behavior → name)
- *   2. Pick path   — /agents/[id]/connect?new=1 (SDK / Bot / MCP picker, UX-5.15.S)
- *   3. Setup       — /agents/[id]/mcp?new=1 or /agents/[id]/watchers?new=1
- *   4. Verify      — back at /agents/[id]?new=1 with event_count > 0
+ *   1. Basics  — /agents/new (three sub-steps: purpose → behavior → name)
+ *   2. Setup   — /agents/[id]/api/setup?new=1 (default), or /mcp / /watchers
+ *   3. Verify  — back at /agents/[id]?new=1 with event_count > 0
  *
  * Sprint UX-5.15.M (Jose feedback) — step 1 was originally just "Name"
  * but the multi-step wizard at /agents/new now collects purpose +
  * behavior + name. "Name" undersold what step 1 was, so the label is
  * "Basics" — covers the whole what-and-why-and-name block.
  *
- * Sprint UX-5.15.S — step 2 was "Connect" but it landed on the agent
- * detail page (which is a "no events yet" empty state) and let the
- * user fish around for surface buttons. New step 2 is the explicit
- * surface picker at /connect, so "Pick path" is the truthful label.
+ * gh-127 — the standalone "Pick path" step (/agents/[id]/connect) only
+ * ever showed a single option (HTTP API / SDK), so it was a dead click.
+ * The wizard now goes straight from Basics to Setup; the /connect route
+ * still exists for direct access but is no longer a numbered step.
  *
  * Server Component — pure visual, no client state.
  */
 
 const STEPS = [
   { n: 1, label: "Basics" },
-  { n: 2, label: "Pick path" },
-  { n: 3, label: "Setup" },
-  { n: 4, label: "Verify" },
+  { n: 2, label: "Setup" },
+  { n: 3, label: "Verify" },
 ];
 
 interface Props {
-  currentStep: 1 | 2 | 3 | 4;
+  currentStep: 1 | 2 | 3;
 }
 
 export function WizardProgress({ currentStep }: Props) {

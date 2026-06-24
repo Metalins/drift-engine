@@ -247,7 +247,7 @@ export default async function AgentDetailPage({
   // (i.e. they bounced back to the detail from the picker without
   // continuing). Once `integration.surface` flips to mcp/watcher,
   // the wizard has done its job and we drop the breadcrumb.
-  const wizardStep: 1 | 2 | 3 | 4 | null =
+  const wizardStep: 1 | 2 | 3 | null =
     isJustCreated && agent.integration.surface === "none" ? 2 : null;
 
   // UX-5.15.Y — once the agent is bound to an integration, strip the
@@ -420,7 +420,7 @@ export default async function AgentDetailPage({
             Agent created ✓
           </div>
           <h2 className="text-xl font-semibold tracking-tight">
-            Pick how this agent will talk to Metalins
+            Pick how this agent will talk to Drift Engine
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Choose one — this agent&apos;s identity is bound to one
@@ -445,7 +445,7 @@ export default async function AgentDetailPage({
             {" "}— a public handle you already control (Telegram,
             GitHub, or DNS). Visitors cross-check it on that
             platform themselves, so trust doesn&apos;t depend on
-            Metalins alone. Optional &mdash; the agent works without
+            this instance alone. Optional &mdash; the agent works without
             it.
           </p>
           {/* UX-5.17 docs/UX pass — route to the /connect picker

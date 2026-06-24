@@ -114,7 +114,7 @@ export function LiveVerification({
               First activity received.
             </h2>
             <p className="mt-1.5 text-sm text-muted-foreground">
-              Your agent is talking to Metalins. We&apos;ll start
+              Your agent is talking to Drift Engine. We&apos;ll start
               verifying its identity now &mdash; refreshing&hellip;
             </p>
           </div>

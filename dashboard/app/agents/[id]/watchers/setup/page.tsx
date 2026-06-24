@@ -80,7 +80,7 @@ export default async function WatcherSetupWizardPage({ params }: PageProps) {
   return (
     <main className="space-y-6">
       <div className="pt-2">
-        <WizardProgress currentStep={3} />
+        <WizardProgress currentStep={2} />
       </div>
 
       <div>

@@ -50,7 +50,7 @@ export default async function SettingsPage() {
           <h2 className="text-lg font-medium">API keys</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Keys authenticate your agents and SDK calls against
-            Metalins. Mint new keys, rotate, or revoke from the
+            Drift Engine. Mint new keys, rotate, or revoke from the
             keys page.
           </p>
         </div>
@@ -98,7 +98,7 @@ export default async function SettingsPage() {
         <div>
           <h2 className="text-lg font-medium">Password</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Sign in to Metalins with email + password as an alternative to
+            Sign in to Drift Engine with email + password as an alternative to
             magic-link. New accounts are created via magic-link only — set
             your first password here once you&apos;re signed in.
           </p>

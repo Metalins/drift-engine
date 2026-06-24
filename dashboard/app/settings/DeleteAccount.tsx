@@ -62,7 +62,7 @@ export function DeleteAccount({ email }: { email: string }) {
           Delete account
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Permanently delete your Metalins account. This is immediate
+          Permanently delete your Drift Engine account. This is immediate
           and cannot be undone &mdash; every agent and all of its data
           (events, event logs, identity history, API keys) is erased.
           We keep nothing afterwards, only an audit record of the

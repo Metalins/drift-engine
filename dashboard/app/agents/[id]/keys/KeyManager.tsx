@@ -24,7 +24,7 @@ interface Props {
    * Optional callback fired right after a new key is minted, with the
    * plaintext secret in-hand. Used by the MCP setup page (Sprint
    * UX-5.15.K) to auto-fill the client-config snippets so the user
-   * doesn't have to substitute `YOUR_METALINS_KEY` manually.
+   * doesn't have to substitute `YOUR_API_KEY` manually.
    *
    * Receives the same CreatedKey we put in the "copy now" panel; the
    * caller is responsible for clearing its own copy on dismiss.
