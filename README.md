@@ -15,6 +15,14 @@ Verdicts are issued as **κ-Proofs** — signed JSON Web Tokens verifiable by an
 
 Read the paper: [κ-Identity: Behavioral Fingerprinting for Continuous Verification of LLM Agents](https://zenodo.org/records/20693203) — DOI: 10.5281/zenodo.20693202
 
+## Screenshots
+
+| Login | Dashboard | Agent (healthy) |
+|-------|-----------|-----------------|
+| ![Login](docs/screenshots/login.png) | ![Dashboard](docs/screenshots/dashboard.png) | ![Agent healthy](docs/screenshots/agent-healthy.png) |
+
+After sending events, the agent establishes a behavioral baseline. Once it has enough data, it reaches **T3 — Full coverage** and reports `Healthy · Cryptographic identity verified · behavior consistent`.
+
 ## Self-hosting
 
 ### Requirements
@@ -84,18 +92,32 @@ pip install metalins-drift
 ```
 
 ```python
-from metalins_drift import MetalinsClient
+import hashlib, requests
 
-client = MetalinsClient(
-    api_key="ml_dev_XXXX...",
-    server_url="http://localhost:8000",  # your self-hosted instance
-)
+API_KEY = "ml_dev_XXXX..."          # from docker compose logs on first boot
+BASE_URL = "http://localhost:8000"  # your self-hosted instance
 
 # Register an agent
-agent = client.register_agent(name="my-agent")
+resp = requests.post(
+    f"{BASE_URL}/v1/agents",
+    json={"name": "my-agent"},
+    headers={"Authorization": f"Bearer {API_KEY}"},
+)
+agent_id = resp.json()["agent_id"]
 
-# Log turns
-client.log_turn(agent_id=agent["id"], input="...", output="...")
+# Log a turn (hashes stay on your side — raw content never leaves your infra)
+def sha256(text):
+    return hashlib.sha256(text.encode()).hexdigest()
+
+requests.post(
+    f"{BASE_URL}/v1/agents/{agent_id}/events",
+    json={
+        "input_hash": sha256(user_input),
+        "output_hash": sha256(agent_output),
+        "metadata": {"behavioral": {"output_length_chars": len(agent_output)}},
+    },
+    headers={"Authorization": f"Bearer {API_KEY}"},
+)
 ```
 
 → [drift-engine-python](https://github.com/Metalins/drift-engine-python) for full SDK docs.
