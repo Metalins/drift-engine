@@ -26,7 +26,7 @@
  * link surfaced but de-emphasized (smaller header, no badge embed).
  */
 import { useState } from "react";
-import { Check, Copy, ExternalLink, Send, Share2, Twitter } from "lucide-react";
+import { Check, Copy, ExternalLink, Share2 } from "lucide-react";
 
 interface Props {
   agentId: string;
@@ -55,7 +55,8 @@ const API_URL = (
 
 export function ShareVerification({
   agentId,
-  agentName,
+  // agentName is still accepted by callers but no longer used in the
+  // body since gh-124 removed the pre-filled social share message.
   publicSlug,
   compact = false,
   daystate = "active",
@@ -75,21 +76,6 @@ export function ShareVerification({
   // /v/<slug>. The URL above still works, but we surface a small CTA
   // so the creator knows there's a clean-URL upgrade available.
   const hasCleanSlug = Boolean(publicSlug);
-
-  // Pre-populated share message. Keeping it short and creator-voice
-  // (Carlos talked about pinning this in his channel bio / DM auto-reply).
-  const shareText = agentName
-    ? `Verify that ${agentName} is really mine: ${url}`
-    : `Verify this agent is really mine: ${url}`;
-  const telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(
-    url,
-  )}&text=${encodeURIComponent(shareText)}`;
-  const xShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-    shareText,
-  )}`;
-  const whatsappShareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(
-    shareText,
-  )}`;
 
   // Badge embed snippets — only meaningful when we have a slug. Without
   // a slug the badge endpoint can't resolve; we hide the section
@@ -142,8 +128,8 @@ export function ShareVerification({
             ) : (
               <>
                 Anyone with this link can confirm your agent is the real
-                one &mdash; in one click, no signup. Paste it in your
-                bot&apos;s bio, your listing, or your docs.
+                one &mdash; in one click, no signup. Share this link so
+                anyone can verify your agent without signing up.
               </>
             )}
           </p>
@@ -218,42 +204,11 @@ export function ShareVerification({
             </a>
           </div>
 
-          {/* Quick-share buttons — Sprint UX-5.11 / Carlos round 0
-              (bug-carlos-5). Pre-fills each platform's share intent
-              with the verify URL + a short message. Carlos's JTBD is
-              one-tap distribution to his audience. */}
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <a
-              href={telegramShareUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium hover:bg-accent"
-              aria-label="Share to Telegram"
-            >
-              <Send size={12} aria-hidden="true" />
-              Share to Telegram
-            </a>
-            <a
-              href={xShareUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium hover:bg-accent"
-              aria-label="Share to X (Twitter)"
-            >
-              <Twitter size={12} aria-hidden="true" />
-              Tweet
-            </a>
-            <a
-              href={whatsappShareUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium hover:bg-accent"
-              aria-label="Share to WhatsApp"
-            >
-              <Share2 size={12} aria-hidden="true" />
-              WhatsApp
-            </a>
-          </div>
+          {/* gh-124 — Social quick-share buttons (Telegram / X /
+              WhatsApp) removed for self-hosted. Verify links point at
+              the operator's own domain (or localhost); broadcasting them
+              to social networks isn't relevant for a B2B self-hosted
+              product. The URL + Copy above covers sharing. */}
 
           {/* Embed badge — Sprint UX-5.10-5. Hidden in compact mode
               (baselining state) because we want the URL + share to
