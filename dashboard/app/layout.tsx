@@ -1,10 +1,11 @@
 /**
  * Root layout.
  *
- * Sprint 3c.4 — adapts based on auth state:
- *   • Logged-out visitors see a research-lab nav (logo + Research +
- *     Products + Docs + a "Self-host" CTA; gh-105 demoted the old
- *     "Sign in" primary button to a quiet admin link).
+ * Adapts based on auth state:
+ *   • Logged-out visitors see the public product nav (Drift Engine logo +
+ *     Docs + a GitHub link — see PublicNav). gh-121 (2026-06-24) stripped
+ *     the old lab links (Research / Products / Writing) since this is the
+ *     self-hosted product, not the metalins.com lab site.
  *   • Logged-in users see the account header (email + signout).
  *
  * Anti-indexation:
@@ -41,17 +42,16 @@ export const metadata: Metadata = {
   // anchors every relative OG/Twitter asset (e.g. /og-image.png) and the
   // canonical URL to metalins.com; metalins.ai 301s here via middleware.
   metadataBase: new URL("https://metalins.com"),
-  // gh-100 / gh-99 (2026-06-14): the homepage is now the front door of an
-  // independent research lab, not a SaaS product. Default title, OG and
-  // Twitter cards reflect the lab framing so that sharing metalins.com on
-  // Twitter / Slack / WhatsApp / LinkedIn previews "Metalins — Independent
-  // Research Lab", with Drift Engine named as the first product.
+  // gh-121 (2026-06-24): this dashboard ships inside the public, self-hosted
+  // Drift Engine repo. The default title/description identify the product —
+  // not the Metalins research lab — so a self-hoster's tab and any link
+  // preview read "Drift Engine", which is what they actually run.
   title: {
-    default: "Metalins — Independent Research Lab",
+    default: "Drift Engine",
     template: "%s",
   },
   description:
-    "Metalins is an independent research lab. We explore, build, and publish. Drift Engine — behavioral fingerprinting for AI agents — is our first open-source product.",
+    "Drift Engine — open-source behavioral fingerprinting for AI agents.",
   icons: {
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
   },
@@ -59,28 +59,18 @@ export const metadata: Metadata = {
     ? { index: true, follow: true }
     : { index: false, follow: false, nocache: true },
   openGraph: {
-    title: "Metalins — Independent Research Lab",
+    title: "Drift Engine",
     description:
-      "We explore, build, and publish. Drift Engine is our first open-source product.",
-    url: "https://metalins.com",
-    siteName: "Metalins",
+      "Open-source behavioral fingerprinting for AI agents.",
+    siteName: "Drift Engine",
     type: "website",
     locale: "en_US",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Metalins — an independent research lab. We explore, build, and publish.",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Metalins — Independent Research Lab",
+    title: "Drift Engine",
     description:
-      "We explore, build, and publish. Drift Engine is our first open-source product.",
-    images: ["/og-image.png"],
+      "Open-source behavioral fingerprinting for AI agents.",
   },
 };
 
@@ -136,7 +126,7 @@ async function TopNav() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo.svg" alt="" className="h-7 w-7" />
           <span className="text-base font-semibold tracking-tight">
-            Metalins
+            Drift Engine
           </span>
         </Link>
         <nav className="flex items-center gap-1 text-sm">
@@ -232,10 +222,11 @@ export default async function RootLayout({
 /**
  * PublicTopBar — minimal header used by /verify/* and /v/* only.
  *
- * No nav links, no user menu. Just the brand mark + a single
- * "Get Metalins" CTA that converts a curious visitor into a signup.
- * Anyone who lands here either knows what Metalins is (because Carlos
- * told them) or doesn't (and we want them to find out).
+ * No nav links, no user menu. Just the brand mark + a single CTA to the
+ * product docs. A stranger validating an agent lands here either knowing
+ * what Drift Engine is or not — the docs link lets them find out.
+ * gh-121 (2026-06-24): rebranded from the Metalins lab to the Drift Engine
+ * product, and the CTA now points at the docs instead of the lab landing.
  */
 function PublicTopBar() {
   return (
@@ -245,14 +236,14 @@ function PublicTopBar() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo.svg" alt="" className="h-7 w-7" />
           <span className="text-base font-semibold tracking-tight">
-            Metalins
+            Drift Engine
           </span>
         </Link>
         <Link
-          href="/"
+          href="/drift-engine/docs"
           className="rounded-md border px-3 py-1.5 text-xs font-medium hover:bg-accent"
         >
-          What is Metalins? →
+          What is Drift Engine? →
         </Link>
       </div>
     </header>

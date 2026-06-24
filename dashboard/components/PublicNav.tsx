@@ -3,14 +3,16 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Boxes, Github, Menu, PenLine, X } from "lucide-react";
+import { BookOpen, Github, Menu, X } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 
-const GITHUB_ORG_URL = "https://github.com/Metalins";
+// gh-121 (2026-06-24): self-hosted Drift Engine ships no lab marketing. The
+// repo is the public product; GitHub for the source lives under the Metalins
+// org, but the only public nav targets are the product docs and the source.
+const GITHUB_REPO_URL = "https://github.com/Metalins/drift-engine";
 
 const NAV_ITEMS = [
-  { href: "/products", label: "Products", icon: Boxes },
-  { href: "/writing", label: "Writing", icon: PenLine },
+  { href: "/drift-engine/docs", label: "Docs", icon: BookOpen },
 ] as const;
 
 export function PublicNav() {
@@ -40,11 +42,11 @@ export function PublicNav() {
           </NavLink>
         ))}
         <a
-          href={GITHUB_ORG_URL}
+          href={GITHUB_REPO_URL}
           target="_blank"
           rel="noopener noreferrer"
-          title="Metalins on GitHub"
-          aria-label="Metalins on GitHub"
+          title="Drift Engine on GitHub"
+          aria-label="Drift Engine on GitHub"
           className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
         >
           <Github size={16} aria-hidden />
@@ -82,7 +84,7 @@ export function PublicNav() {
               </Link>
             ))}
             <a
-              href={GITHUB_ORG_URL}
+              href={GITHUB_REPO_URL}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setOpen(false)}

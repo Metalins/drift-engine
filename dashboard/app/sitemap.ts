@@ -53,20 +53,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
-      // gh-101 (2026-06-15): /products is a real, indexable route now —
-      // the lab wants its products discoverable.
-      url: `${BASE_URL}/products`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: `${BASE_URL}/writing`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
       url: `${BASE_URL}/terms`,
       lastModified: now,
       changeFrequency: "yearly",
