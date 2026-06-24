@@ -194,10 +194,10 @@ export default async function ConnectPickerPage({
         </Link>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight">
           How will <span className="text-primary">{agentName}</span> talk to
-          Metalins?
+          Drift Engine?
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Identity tracking starts when this agent sends events to Metalins.
+          Identity tracking starts when this agent sends events to Drift Engine.
           Pick the path that matches how your agent is used. You can change
           this later from the agent settings.
         </p>
@@ -234,7 +234,7 @@ export default async function ConnectPickerPage({
               href={`/agents/${encodeURIComponent(agentId)}/mcp/setup${wizardSuffix}`}
               icon={<Terminal size={20} />}
               title="MCP server"
-              blurb="Connect Metalins as an MCP server in Claude Desktop, Claude Code, Cursor, or any client that speaks the protocol. Your client logs events as it calls tools."
+              blurb="Connect Drift Engine as an MCP server in Claude Desktop, Claude Code, Cursor, or any client that speaks the protocol. Your client logs events as it calls tools."
               bestFor="Power users of a chat or editor surface (Claude Desktop, ChatGPT, Cursor, Claude Code) who want their assistant identity-tracked."
               limitations={[
                 "Events fire only when the LLM decides to call a tool. Chat-only surfaces need a system-prompt block (we'll give you one) for continuous coverage.",

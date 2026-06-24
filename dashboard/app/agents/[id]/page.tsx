@@ -360,28 +360,10 @@ export default async function AgentDetailPage({
             )}
             {agent.integration.surface === "mcp" && (
               <>
-                {/* gh-75 — SDK-only agents log events through the same
-                    HTTP /log_event surface that MCP agents use, so the
-                    server's _detect_integration tags them surface="mcp"
-                    (the same probe_client quirk fixed for score factors
-                    in gh-84). That made "Manage MCP" show on agents that
-                    have no MCP integration to manage, which confused
-                    Diana. `probe_capable` is true exactly when the agent
-                    runs the SDK probe client (false for every V1
-                    MCP-prompt agent — see agent_has_probe_client), so we
-                    use it to hide the MCP-management CTA for SDK agents.
+                {/* gh-122 — "Manage MCP" routed to the cloud MCP server
+                    config, which doesn't exist in self-hosted. Removed.
                     External anchors stay: public verify links apply to
-                    SDK agents too. (Missing/undefined probe_capable on
-                    older payloads falls back to showing the link, which
-                    is the safe default for genuine MCP agents.) */}
-                {!agent.probe_capable && (
-                  <Link
-                    href={`/agents/${enc}/mcp`}
-                    className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-                  >
-                    Manage MCP
-                  </Link>
-                )}
+                    every agent regardless of integration surface. */}
                 <Link
                   href={`/agents/${enc}/anchors`}
                   className="rounded-md border px-3 py-1.5 text-sm font-medium hover:bg-accent"
